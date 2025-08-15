@@ -18,5 +18,41 @@
     -ms-user-select: none;
     user-select: none;
   }
+}
+
+@layer components {
+  .button-hover-animation {
+    /* Exit animations */
+    transition: transform 500ms;
+  }
   
+  .button-hover-animation:hover {
+    transform: scale(1.04);
+    
+    /* Enter animation */
+    transition: transform 120ms;
+  }
+
+  /* Modal animation utilities */
+  .modal-backdrop {
+    transition: opacity ease-in-out;
+  }
+
+  .modal-content {
+    transition: transform ease-in-out;
+  }
+
+  .modal-inner-content {
+    transition: opacity ease-in-out, transform ease-in-out;
+  }
+
+  /* Ensure smooth animations on all modal elements */
+  .modal-wrapper {
+    transition: all ease-in-out;
+  }
+
+  /* Hide scrollbar during modal animations */
+  .modal-no-scroll {
+    overflow: hidden;
+  }
 }

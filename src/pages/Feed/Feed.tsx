@@ -121,10 +121,11 @@ const Feed: React.FC = () => {
             ))}
            </div>
            <Login 
-               className="fixed inset-0 bg-black/45 z-50" 
+               className="z-50" 
                visible={modalType === 'login'} 
                onClose={handleCloseModal} 
-               onSignUp={handleShowSignup} 
+               onSignUp={handleShowSignup}
+               isModal={true}
            />
            <SignUp 
                className="fixed inset-0 bg-black/45 z-50" 
