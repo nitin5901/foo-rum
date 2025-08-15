@@ -157,7 +157,7 @@ const SignUp: React.FC<SignUpProps> = ({ className, visible, onClose }) => {
         visible={showAlert}
         onClose={handleCloseAlert}
         autoClose={true}
-        autoCloseDelay={3000}
+        autoCloseDelay={1200}
       />
     </div>
   );

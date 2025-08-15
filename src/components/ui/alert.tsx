@@ -22,7 +22,7 @@ const Alert: React.FC<AlertProps> = ({
   visible,
   onClose,
   autoClose = true,
-  autoCloseDelay = 3000,
+  autoCloseDelay = 1200,
   actionButton
 }) => {
   useEffect(() => {

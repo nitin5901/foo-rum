@@ -134,7 +134,7 @@ const Feed: React.FC = () => {
                visible={showAlert}
                onClose={handleCloseAlert}
                autoClose={true}
-               autoCloseDelay={3000}
+               autoCloseDelay={1200}
            />
         </div>
     )
