@@ -4,7 +4,6 @@ export interface LoginFormData {
   password: string;
 }
 
-// Auth Types
 export interface User {
   id: string;
   email: string;
@@ -19,7 +18,6 @@ export interface AuthState {
   error: string | null;
 }
 
-// Post Types
 export interface Post {
   id: string;
   content: string;
