@@ -4,7 +4,6 @@ import loginIcon from '../assets/login.svg';
 import Input from './ui/input';
 import { Button } from './ui/button';
 import { useAuth } from '../hooks/useAuth';
-import Alert from './ui/alert';
 
 interface SignUpProps {
   visible?: boolean;
@@ -12,10 +11,11 @@ interface SignUpProps {
   onClose?: () => void;
   onSignIn?: () => void;
   onSignUp?: () => void;
+  onSignUpSuccess?: () => void;
 }
 
-const SignUp: React.FC<SignUpProps> = ({ className, visible, onClose }) => {
-  const { loading, error, clearError, isAuthenticated } = useAuth();
+const SignUp: React.FC<SignUpProps> = ({ className, visible, onClose, onSignIn, onSignUpSuccess }) => {
+  const { loading, error, clearError, isAuthenticated, signup } = useAuth();
   const [formData, setFormData] = useState({ 
     email: '', 
     password: '', 
@@ -23,13 +23,18 @@ const SignUp: React.FC<SignUpProps> = ({ className, visible, onClose }) => {
     username: '' 
   });
   const [passwordError, setPasswordError] = useState('');
-  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated && visible) {
       onClose?.();
     }
   }, [isAuthenticated, visible, onClose]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      onSignUpSuccess?.();
+    }
+  }, [isAuthenticated, onSignUpSuccess]);
 
   const memoizedClearError = useCallback(() => {
     clearError();
@@ -53,12 +58,29 @@ const SignUp: React.FC<SignUpProps> = ({ className, visible, onClose }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowAlert(true);
+    
+    if (formData.password !== formData.repeatPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+    
+    if (formData.password.length < 6) {
+      setPasswordError('Password must be at least 6 characters long');
+      return;
+    }
+    
+    try {
+      await signup({
+        email: formData.email,
+        password: formData.password,
+        username: formData.username || formData.email.split('@')[0]
+      });
+    } catch (error) {
+      console.error('Signup failed:', error);
+    }
   };
 
-  const handleCloseAlert = () => {
-    setShowAlert(false);
-  };
+
   
   if (!visible) return null;
   
@@ -143,22 +165,12 @@ const SignUp: React.FC<SignUpProps> = ({ className, visible, onClose }) => {
         
         <p className="text-black/60 text-sm flex items-center">
           Already have an account?
-          <Button variant="ghost" size="sm" onClick={() => setShowAlert(true)}>
+          <Button variant="ghost" size="sm" onClick={onSignIn}>
             Sign In
           </Button>
         </p>
         
       </div>
-      
-      <Alert
-        title="Feature Not Available"
-        message="This function is not implemented yet. Stay tuned for updates!"
-        type="info"
-        visible={showAlert}
-        onClose={handleCloseAlert}
-        autoClose={true}
-        autoCloseDelay={1200}
-      />
     </div>
   );
 };

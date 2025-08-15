@@ -14,7 +14,11 @@ const SignupPage: React.FC = () => {
         <div className="bg-white flex flex-col items-center py-40 px-2 sm:px-10">
             <Header rightContent={rightContent} />
             <div className="flex flex-col items-center gap-4">
-            <SignUp visible={true} onSignIn={() => navigate('/login', { replace: true })}/>
+            <SignUp 
+                visible={true} 
+                onSignIn={() => navigate('/login', { replace: true })}
+                onSignUpSuccess={() => navigate('/', { replace: true })}
+            />
             </div>
         </div>
     );

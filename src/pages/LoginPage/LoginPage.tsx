@@ -14,7 +14,11 @@ const LoginPage: React.FC = () => {
         <div className="bg-white flex flex-col items-center py-40 px-2 sm:px-10">
             <Header rightContent={rightContent} />
             <div className="flex flex-col items-center gap-4">
-            <Login visible={true} onSignUp={() => navigate('/signup', { replace: true })}/>
+            <Login 
+                visible={true} 
+                onSignUp={() => navigate('/signup', { replace: true })}
+                onSignIn={() => navigate('/', { replace: true })}
+            />
             </div>
         </div>
     );
