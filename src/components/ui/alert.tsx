@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import crossIcon from '../../assets/cross.svg';
+import { useAlertAnimation } from '../../hooks/useAlertAnimation';
 
 export interface AlertProps {
   title?: string;
@@ -25,6 +26,14 @@ const Alert: React.FC<AlertProps> = ({
   autoCloseDelay = 1200,
   actionButton
 }) => {
+  const {
+    shouldRender,
+    backdropStyles,
+    alertStyles,
+    contentStyles,
+    wrapperStyles
+  } = useAlertAnimation(visible);
+
   useEffect(() => {
     if (visible && autoClose) {
       const timer = setTimeout(() => {
@@ -34,6 +43,20 @@ const Alert: React.FC<AlertProps> = ({
       return () => clearTimeout(timer);
     }
   }, [visible, autoClose, autoCloseDelay, onClose]);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && visible) {
+        onClose();
+      }
+    };
+
+    if (visible) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [visible, onClose]);
 
   const getTypeStyles = () => {
     switch (type) {
@@ -75,17 +98,24 @@ const Alert: React.FC<AlertProps> = ({
     }
   };
 
-  if (!visible) return null;
+  if (!shouldRender) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
+    <div 
+      className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4"
+      style={wrapperStyles}
+    >
       <div 
-        className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+        className="absolute inset-0 bg-black backdrop-blur-sm"
+        style={backdropStyles}
         onClick={onClose}
       />
       
-      <div className={`relative w-full max-w-md p-6 rounded-lg border shadow-lg transform transition-all duration-300 ease-out ${getTypeStyles()}`}>
-        <div className="flex items-start justify-between">
+      <div 
+        className={`relative w-full max-w-md p-6 rounded-lg border shadow-lg ${getTypeStyles()}`}
+        style={alertStyles}
+      >
+        <div className="flex items-start justify-between" style={contentStyles}>
           <div className="flex-1 pr-4">
             {title && (
               <h3 className="text-lg font-semibold mb-2">

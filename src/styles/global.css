@@ -55,4 +55,52 @@
   .modal-no-scroll {
     overflow: hidden;
   }
+
+  /* Whimsical icon animations */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px) rotate(-1deg); }
+    75% { transform: translateX(2px) rotate(1deg); }
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-3deg) translateY(-1px); }
+    50% { transform: rotate(0deg) translateY(-2px); }
+    75% { transform: rotate(3deg) translateY(-1px); }
+  }
+
+  .wiggle-hover:hover {
+    animation: wiggle 0.6s ease-in-out;
+  }
+
+  /* Comment animation styles - True simultaneous push effect */
+  
+  /* New comment enters from above, pushing everything down */
+  .comment-entering {
+    transform: translateY(-100%);
+    opacity: 0;
+    animation: pushIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  @keyframes pushIn {
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* Comments container allows smooth layout changes */
+  .comment-container {
+    transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* When a new comment is being added, create space smoothly */
+  .comments-list-pushing {
+    transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
 }

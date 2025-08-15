@@ -4,6 +4,7 @@ import loginIcon from '../assets/login.svg';
 import Input from './ui/input';
 import { Button } from './ui/button';
 import { useAuth } from '../hooks/useAuth';
+import { useModalAnimation } from '../hooks/useModalAnimation';
 
 interface SignUpProps {
   visible?: boolean;
@@ -12,9 +13,10 @@ interface SignUpProps {
   onSignIn?: () => void;
   onSignUp?: () => void;
   onSignUpSuccess?: () => void;
+  isModal?: boolean; // New prop to determine if this should behave as a modal
 }
 
-const SignUp: React.FC<SignUpProps> = ({ className, visible, onClose, onSignIn, onSignUpSuccess }) => {
+const SignUp: React.FC<SignUpProps> = ({ className, visible, onClose, onSignIn, onSignUpSuccess, isModal = false }) => {
   const { loading, error, clearError, isAuthenticated, signup } = useAuth();
   const [formData, setFormData] = useState({ 
     email: '', 
@@ -23,6 +25,22 @@ const SignUp: React.FC<SignUpProps> = ({ className, visible, onClose, onSignIn, 
     username: '' 
   });
   const [passwordError, setPasswordError] = useState('');
+
+  // Use the modal animation hook only if this is a modal
+  const modalAnimation = useModalAnimation(visible || false);
+  const { 
+    shouldRender, 
+    backdropStyles, 
+    modalStyles, 
+    contentStyles, 
+    wrapperStyles 
+  } = isModal ? modalAnimation : {
+    shouldRender: visible,
+    backdropStyles: {},
+    modalStyles: {},
+    contentStyles: {},
+    wrapperStyles: {}
+  };
 
   useEffect(() => {
     if (isAuthenticated && visible) {
@@ -46,6 +64,20 @@ const SignUp: React.FC<SignUpProps> = ({ className, visible, onClose, onSignIn, 
       setPasswordError('');
     }
   }, [visible, memoizedClearError]);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && visible) {
+        onClose?.();
+      }
+    };
+
+    if (visible) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [visible, onClose]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -82,8 +114,120 @@ const SignUp: React.FC<SignUpProps> = ({ className, visible, onClose, onSignIn, 
 
 
   
-  if (!visible) return null;
+  if (!shouldRender) return null;
   
+  if (isModal) {
+    return (
+      <div 
+        className={`fixed inset-0 flex flex-col items-center justify-center p-4 overflow-hidden ${className}`} 
+        style={wrapperStyles}
+        onClick={() => onClose?.()} 
+      >
+        {/* Backdrop */}
+        <div 
+          className="absolute inset-0 bg-black"
+          style={backdropStyles}
+          onClick={() => onClose?.()}
+        />
+        
+        {/* Modal Content */}
+        <div 
+          className='relative bg-grey px-3 pt-3 rounded-4xl flex flex-col items-center' 
+          style={modalStyles}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div 
+            className="bg-white rounded-3xl p-8 flex flex-col items-center gap-5.5"
+            style={contentStyles}
+          >
+          
+          <div className="size-13 bg-disabled rounded-full flex items-center justify-center">
+            <img src={loginIcon} alt="signup" className="size-6" />
+          </div>
+        
+          <div className="flex flex-col items-center gap-2 text-center">
+            <p className="text-xl font-bold m-0">
+              Create an account to continue
+            </p>
+            <p className="text-black/48 font-normal text-ms m-0">
+              Create an account to access all the features on this app
+            </p>
+          </div>
+
+          {(error || passwordError) && (
+            <div className="w-full p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600 text-sm text-center">{error || passwordError}</p>
+            </div>
+          )}
+
+          <form className="mt-4 sm:mt-16 pb-4 flex flex-col gap-6 w-full sm:w-[498px]" onSubmit={handleSubmit}>
+            
+            <Input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Enter your username (optional)"
+              label="Username"
+              value={formData.username}
+              onChange={handleInputChange}
+              disabled={loading}
+            />
+            
+            <Input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+              required
+              label="Email"
+              value={formData.email}
+              onChange={handleInputChange}
+              disabled={loading}
+            />
+            
+            <Input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              label="Password"
+              required
+              value={formData.password}
+              onChange={handleInputChange}
+              disabled={loading}
+            />
+            
+            <Input
+              type="password"
+              id="repeatPassword"
+              name="repeatPassword"
+              placeholder="Enter your password again"
+              label="Repeat password"
+              required
+              value={formData.repeatPassword}
+              onChange={handleInputChange}
+              disabled={loading}
+            />
+
+            <Button variant="default" size="lg" type="submit" disabled={loading} onClick={handleSubmit}>
+              {loading ? 'Creating Account...' : 'Sign Up'}
+            </Button>
+          </form>
+          </div>
+         
+          <p className="text-black/60 text-sm flex items-center">
+            Already have an account?
+            <Button variant="ghost" size="sm" onClick={onSignIn}>
+              Sign In
+            </Button>
+          </p>
+          
+        </div>
+      </div>
+    );
+  }
+
+  // Non-modal version (for SignupPage)
   return (
     <div className={`flex flex-col items-center justify-center p-4 ${className}`} onClick={() => onClose?.()}>
       <div className='bg-grey px-3 pt-3 rounded-4xl flex flex-col items-center' onClick={(e) => e.stopPropagation()}>

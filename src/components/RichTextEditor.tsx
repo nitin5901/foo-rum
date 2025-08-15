@@ -169,18 +169,28 @@ const RichTextEditor = ({ className, isAuthenticated = false, onUnauthenticatedA
                 <div className="flex items-center gap-4">
                     <img 
                         src={plusIcon} 
-                        className={`size-4.5 bg-black/5 rounded-xl p-2 ${!isAuthenticated ? 'cursor-pointer' : 'cursor-default'}`}
+                        className={`size-4.5 bg-black/5 rounded-xl p-2 transition-transform duration-500 ease-in-out hover:rotate-180 hover:scale-110 ${!isAuthenticated ? 'cursor-pointer' : 'cursor-default'}`}
                         onClick={handleInteraction}
                     />
                     <img 
                         src={micIcon} 
-                        className={`size-4.5 ${!isAuthenticated ? 'cursor-pointer' : 'cursor-default'}`}
+                        className={`size-4.5 transition-transform duration-200 ease-in-out hover:animate-pulse hover:scale-105 ${!isAuthenticated ? 'cursor-pointer' : 'cursor-default'}`}
                         onClick={handleInteraction}
+                        style={{
+                            animation: 'shake 0.5s ease-in-out infinite paused'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.animation = 'shake 0.5s ease-in-out infinite'}
+                        onMouseLeave={(e) => e.currentTarget.style.animation = 'shake 0.5s ease-in-out infinite paused'}
                     />
                     <img 
                         src={cameraIcon} 
-                        className={`size-4.5 ${!isAuthenticated ? 'cursor-pointer' : 'cursor-default'}`}
+                        className={`size-4.5 transition-transform duration-200 ease-in-out hover:animate-bounce hover:scale-105 ${!isAuthenticated ? 'cursor-pointer' : 'cursor-default'}`}
                         onClick={handleInteraction}
+                        style={{
+                            animation: 'wiggle 0.6s ease-in-out infinite paused'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.animation = 'wiggle 0.6s ease-in-out infinite'}
+                        onMouseLeave={(e) => e.currentTarget.style.animation = 'wiggle 0.6s ease-in-out infinite paused'}
                     />
                 </div>
                 <div className="flex flex-row-reverse items-center gap-4">

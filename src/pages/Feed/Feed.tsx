@@ -19,6 +19,7 @@ const Feed: React.FC = () => {
     const navigate = useNavigate();
 
     const [modalType, setModalType] = useState<'login' | 'signup' | null>(null);
+    const [isAddingPost, setIsAddingPost] = useState(false);
 
     useEffect(() => {
         if (modalType) {
@@ -38,7 +39,15 @@ const Feed: React.FC = () => {
 
     const handlePostSubmit = useCallback((content: string) => {
         if (!user) return;
+        
+        // Add the post and trigger push animation
         addPost(content, user);
+        setIsAddingPost(true);
+        
+        // Clear animation state after animation completes
+        setTimeout(() => {
+            setIsAddingPost(false);
+        }, 700); // Match the CSS animation duration
     }, [user, addPost]);
 
     const handleCloseModal = useCallback(() => {
@@ -93,23 +102,28 @@ const Feed: React.FC = () => {
                onUnauthenticatedAction={handleUnauthenticatedAction}
                onPostSubmit={handlePostSubmit}
            />
-           <div className="flex flex-col gap-4 mt-7.5 max-w-[660px]">
-            {posts.map((post) => (
-                <Comment 
-                    key={post.id} 
-                    userProps={{
-                        avatar: post.author.avatar || '',
-                        name: post.author.username || post.author.email.split('@')[0]
-                    }}
-                    messageProps={{
-                        message: post.content,
-                        timeStamp: post.timestamp,
-                        liked: post.liked
-                    }}
-                    isAuthenticated={isAuthenticated}
-                    onUnauthenticatedAction={handleUnauthenticatedAction}
-                />
-            ))}
+           <div className={`flex flex-col gap-4 mt-7.5 max-w-[660px] ${isAddingPost ? 'comments-list-pushing' : ''}`}>
+            {posts.map((post, index) => {
+                const animationClass = index === 0 && isAddingPost ? 'comment-entering' : '';
+                
+                return (
+                    <Comment 
+                        key={post.id} 
+                        userProps={{
+                            avatar: post.author.avatar || '',
+                            name: post.author.username || post.author.email.split('@')[0]
+                        }}
+                        messageProps={{
+                            message: post.content,
+                            timeStamp: post.timestamp,
+                            liked: post.liked
+                        }}
+                        isAuthenticated={isAuthenticated}
+                        onUnauthenticatedAction={handleUnauthenticatedAction}
+                        animationClass={animationClass}
+                    />
+                );
+            })}
             {comments.map((comment, index) => (
                 <Comment 
                     key={`comment-${index}`} 
@@ -132,6 +146,7 @@ const Feed: React.FC = () => {
                visible={modalType === 'signup'} 
                onClose={handleCloseModal} 
                onSignIn={handleShowLogin} 
+               isModal={true}
            />
         </div>
     )
