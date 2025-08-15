@@ -20,15 +20,12 @@ const Feed: React.FC = () => {
 
     const [modalType, setModalType] = useState<'login' | 'signup' | null>(null);
 
-    // Prevent body scroll when modal is open
     useEffect(() => {
         if (modalType) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'unset';
         }
-
-        // Cleanup on unmount
         return () => {
             document.body.style.overflow = 'unset';
         };
