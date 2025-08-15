@@ -1,11 +1,11 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 
 import Header from "../../components/Header";
 import RichTextEditor from "../../components/RichTextEditor";
 import Comment from "../../components/Comment";
 import Login from "../../components/Login";
 import SignUp from "../../components/SignUp";
+import Alert from "../../components/ui/alert";
 import { useAuth } from "../../hooks/useAuth";
 import { usePosts } from "../../hooks/usePosts";
 
@@ -14,11 +14,11 @@ import loginIcon from '../../assets/login.svg'
 import { comments } from "./config";
 
 const Feed: React.FC = () => {
-    const navigate = useNavigate();
-    const { isAuthenticated, logout, user } = useAuth();
+    const { isAuthenticated, user } = useAuth();
     const { posts, addPost } = usePosts();
 
     const [modalType, setModalType] = useState<'login' | 'signup' | null>(null);
+    const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
         if (modalType) {
@@ -52,27 +52,31 @@ const Feed: React.FC = () => {
         setModalType('login');
     }, []);
 
+    const handleCloseAlert = useCallback(() => {
+        setShowAlert(false);
+    }, []);
+
     const rightContent = useMemo(() => {
         if (isAuthenticated) {
             return (
                 <div className="flex flex-row items-center gap-2">
-                    <p className="text-sm font-bold cursor-pointer" onClick={logout}>Logout</p>
+                    <p className="text-sm font-bold cursor-pointer" onClick={() => setShowAlert(true)}>Logout</p>
                 </div>
             );
         }
 
         return (
             <div className="flex flex-row items-center gap-2">
-                <p className="text-sm font-bold cursor-pointer" onClick={() => navigate('/login')}>Login</p>
+                <p className="text-sm font-bold cursor-pointer" onClick={() => setShowAlert(true)}>Login</p>
                 <img 
                     src={loginIcon} 
                     alt="" 
                     className="size-5 cursor-pointer" 
-                    onClick={handleShowLogin}
+                    onClick={() => setShowAlert(true)}
                 />
             </div>
         );
-    }, [navigate, isAuthenticated, logout, handleShowLogin]);
+    }, [isAuthenticated]);
 
     return (
         <div className="bg-white flex flex-col items-center py-40 px-2 sm:px-10">
@@ -121,6 +125,16 @@ const Feed: React.FC = () => {
                visible={modalType === 'signup'} 
                onClose={handleCloseModal} 
                onSignIn={handleShowLogin} 
+           />
+           
+           <Alert
+               title="Feature Not Available"
+               message="This function is not implemented yet. Stay tuned for updates!"
+               type="info"
+               visible={showAlert}
+               onClose={handleCloseAlert}
+               autoClose={true}
+               autoCloseDelay={3000}
            />
         </div>
     )

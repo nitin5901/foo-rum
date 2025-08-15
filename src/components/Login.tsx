@@ -4,6 +4,7 @@
     import Input from './ui/input';
     import { Button } from './ui/button';
     import { useAuth } from '../hooks/useAuth';
+    import Alert from './ui/alert';
 
     interface LoginProps {
     visible?: boolean;
@@ -13,9 +14,10 @@
     onSignUp?: () => void;
     }
 
-    const Login: React.FC<LoginProps> = ({  className, visible, onClose, onSignUp }) => {
-    const { login, loading, error, clearError, isAuthenticated } = useAuth();
+    const Login: React.FC<LoginProps> = ({  className, visible, onClose }) => {
+    const { loading, error, clearError, isAuthenticated } = useAuth();
     const [formData, setFormData] = useState({ email: '', password: '' });
+    const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
         if (isAuthenticated && visible) {
@@ -40,9 +42,11 @@
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (formData.email && formData.password) {
-            await login(formData);
-        }
+        setShowAlert(true);
+    };
+
+    const handleCloseAlert = () => {
+        setShowAlert(false);
     };
 
     if (!visible) return null;
@@ -99,7 +103,7 @@
                         />
                     
 
-                        <Button variant="default" size="lg" type="submit" disabled={loading}>
+                        <Button variant="default" size="lg" type="submit" disabled={loading} onClick={handleSubmit}>
                             {loading ? 'Signing In...' : 'Sign In'}
                         </Button>
                     </form>
@@ -107,12 +111,22 @@
                
                 <p className="text-black/60 text-sm flex items-center">
                     Do not have an account?
-                    <Button variant="ghost" size="sm" onClick={() => onSignUp?.()}>
+                    <Button variant="ghost" size="sm" onClick={() => setShowAlert(true)}>
                         Sign Up
                     </Button>
                 </p>
                 
             </div>
+            
+            <Alert
+                title="Feature Not Available"
+                message="This function is not implemented yet. Stay tuned for updates!"
+                type="info"
+                visible={showAlert}
+                onClose={handleCloseAlert}
+                autoClose={true}
+                autoCloseDelay={3000}
+            />
         </div>
     );
     };

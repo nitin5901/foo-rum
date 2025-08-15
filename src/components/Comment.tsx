@@ -1,8 +1,10 @@
 
+import React, { useState } from 'react';
 import heartIcon from '../assets/Comment/heart.svg';
 import commentIcon from '../assets/Comment/comment.svg';
 import sendIcon from '../assets/Comment/send.svg';
 import { formatDate } from '../lib/utils';
+import Alert from './ui/alert';
 
 interface CommentProps {
     userProps: {
@@ -19,12 +21,21 @@ interface CommentProps {
 }
 
 const Comment = ({ userProps, messageProps, isAuthenticated = false, onUnauthenticatedAction }: CommentProps) => {
+    const [showAlert, setShowAlert] = useState(false);
+
     const handleInteraction = (e: React.MouseEvent) => {
         if (!isAuthenticated) {
             e.preventDefault();
             e.stopPropagation();
             onUnauthenticatedAction?.();
+        } else {
+            e.preventDefault();
+            setShowAlert(true);
         }
+    };
+
+    const handleCloseAlert = () => {
+        setShowAlert(false);
     };
     return (
         <div className='bg-black/3 p-2 rounded-[1.35rem]'>
@@ -72,6 +83,16 @@ const Comment = ({ userProps, messageProps, isAuthenticated = false, onUnauthent
                         <img src={sendIcon} alt="share" className="size-4.5" />
                     </button>
                 </div>
+                
+                <Alert
+                    title="Feature Not Available"
+                    message="This function is not implemented yet. Stay tuned for updates!"
+                    type="info"
+                    visible={showAlert}
+                    onClose={handleCloseAlert}
+                    autoClose={true}
+                    autoCloseDelay={3000}
+                />
         </div>
     );
 }

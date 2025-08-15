@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Alert from './ui/alert';
 import chevronDown from '../assets/Editor/chevron-down.svg'
 import boldIcon from '../assets/Editor/text-bold.svg'
 import italicIcon from '../assets/Editor/text-italic.svg'
@@ -24,11 +25,17 @@ interface RichTextEditorProps {
 
 const RichTextEditor = ({ className, isAuthenticated = false, onUnauthenticatedAction, onPostSubmit }: RichTextEditorProps) => {
     const [content, setContent] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
+
     const handleInteraction = (e: React.MouseEvent | React.KeyboardEvent) => {
         if (!isAuthenticated) {
             e.preventDefault();
             e.stopPropagation();
             onUnauthenticatedAction?.();
+        } else {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowAlert(true);
         }
     };
 
@@ -62,25 +69,26 @@ const RichTextEditor = ({ className, isAuthenticated = false, onUnauthenticatedA
 
     const handleClearContent = () => {
         if (isAuthenticated) {
-            setContent('');
+            setShowAlert(true);
         } else {
             onUnauthenticatedAction?.();
         }
+    };
+
+    const handleCloseAlert = () => {
+        setShowAlert(false);
     };
     return <div className={`flex flex-col ${className}`}>
         <div className="border-black/13 border-1 bg-white rounded-[1rem] flex flex-col py-2">
             <div className="flex flex-row flex-wrap bg-white items-center sm:gap-20 md:gap-40 mx-2">
                 <div className="flex flex-row flex-wrap bg-black/3 p-1 rounded-md flex-1 gap-2 sm:gap-0">
                     <div className="flex items-center justify-center bg-white gap-1 sm:gap-2 p-1 sm:p-2 rounded-md">
-                        <select 
-                            className="bg-white appearance-none font-normal text-sm border-none outline-none"
+                        <div 
+                            className="bg-white appearance-none font-normal text-sm border-none outline-none cursor-pointer"
                             onClick={handleInteraction}
-                            disabled={!isAuthenticated}
                         >
-                            <option value="p">Paragraph</option>
-                            <option value="h1">Heading 1</option>
-                            <option value="h2">Heading 2</option>
-                        </select>
+                            Paragraph
+                        </div>
                         <img src={chevronDown} alt="" className="size-2.5" />
                     </div>
                     <div 
@@ -192,6 +200,16 @@ const RichTextEditor = ({ className, isAuthenticated = false, onUnauthenticatedA
                 </div>
         </div>
         </div>
+        
+        <Alert
+            title="Feature Not Available"
+            message="This function is not implemented yet. Stay tuned for updates!"
+            type="info"
+            visible={showAlert}
+            onClose={handleCloseAlert}
+            autoClose={true}
+            autoCloseDelay={3000}
+        />
     </div>
 }
 
